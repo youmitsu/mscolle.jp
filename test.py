@@ -17,4 +17,8 @@ for item in root.xpath("//*[@id='summary']"):
         for th in entry.xpath(".//th"):
             print(th.text)
         for td in entry.xpath(".//td"):
-            print(td.text)
+            if(td.text is None):
+                for tdd in td.xpath(".//text()"):
+                    print(tdd)
+            else:
+                print(td.text)
