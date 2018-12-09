@@ -12,6 +12,9 @@ html = r.text
 root = lxml.html.fromstring(html)
 
 #フッター内のxpath内のデータを取得。
-for item in root.xpath("//*[@id='summary']/table/tbody/tr"):
-      for contest_name in item.xpath(".//th"):
-        print(contest_name.text)
+for item in root.xpath("//*[@id='summary']"):
+    for entry in item.xpath(".//table/*"):
+        for th in entry.xpath(".//th"):
+            print(th.text)
+        for td in entry.xpath(".//td"):
+            print(td.text)
