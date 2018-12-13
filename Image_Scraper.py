@@ -1,21 +1,27 @@
-# coding:utf-8
-
 import requests
-from bs4 import BeautifulSoup
+import lxml.html
+import cssselect
+import uuid
 
-url = 'https://programming-beginner-zeroichi.jp/'
-# スクレイピングするユーザーエージェントを指定
-headers = {'User-Agent':'Mozilla/5.0'}
-soup = BeautifulSoup(requests.get(url,headers=headers).content,'lxml')
-images = [] # 画像リストの空配列
+top_url = "https://misscolle.com"
+top_url_response = requests.get(top_url)
 
-for img in soup.find_all('img', class_="img", limit=5):
-    # コンソールへスクレイピング対象の画像URLを表示。特段必須ではない
-    print(img.get("src"))
-    # imagesの空配列へsrcを登録
-    images.append(img.get("src"))
+url = "https://misscolle.com/aoyama2018"
+url_response = requests.get(url)
 
-# imagesからtargetに入れる
+images = []
+
+#TOPページの中のHTMLをrootに格納。
+top_html = top_url_response.text
+top_root = lxml.html.fromstring(top_html)
+
+html = url_response.text
+root = lxml.html.fromstring(html)
+
+for img in root.xpath("//*[@id='contest-header-image']/img"):
+   print(top_url + img.get("src"))
+   images.append(top_url + img.get("src"))
+
 for target in images:
     re = requests.get(target)
     with open('/Users/YUSUKE/Desktop/Mscolle.com/imgs/' + target.split('/')[-1], 'wb') as f: # imgフォルダに格納
