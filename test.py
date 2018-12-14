@@ -64,10 +64,12 @@ for contest_url in contests_url:
     table = bs_obj.findAll("table")[0]
     rows = table.findAll("tr")
 
+    dataObj = {}
+    print("========%s========" % contest_url)
     for row in rows:
-        print("========row========")
-        print(removeExtraChars(row.th.getText()))
-        print(removeExtraChars(row.td.getText()))
+        dataObj[row.th.getText()] = removeExtraChars(row.td.getText())
+
+    print(dataObj)
     #コンテスト名
 
     #大学名
