@@ -3,6 +3,7 @@ import requests
 import lxml.html
 import cssselect
 import pymysql
+import uuid
 
 #Left,Right,middleを定義
 def left(text, n):
@@ -23,6 +24,8 @@ top_html = top_url_response.text
 top_root = lxml.html.fromstring(top_html)
 contests_url = []
 profiles_url = []
+contest_images = []
+profile_images = []
 
 #SQLのログイン情報を記載
 connector = pymysql.connect(
@@ -67,16 +70,25 @@ for contest_url in contests_url:
     #開催年度の取得 *
     print(right(contest_url,4))
 
-    #contest_imageの取得　*
-
-
-
-
 ##****** Contestのページのスクレピング******##
     #TOPページの中のHTMLをrootに格納。
     contest_response = requests.get(contest_url)
     contest_html = contest_response.text
     contest_root = lxml.html.fromstring(contest_html)
+
+    #contest_idの取得
+
+
+    #contest_imageの取得　*
+    for contest_img in contest_root.xpath("//*[@id='contest-header-image']/img"):
+       print(top_url + contest_img.get("src"))
+       contest_images.append(top_url + contest_img.get("src"))
+
+    for target in contest_images:
+        re = requests.get(target)
+    with open('/Users/YUSUKE/Desktop/Mscolle.com/contest_imgs/' + str(uuid.uuid1()) + target.replace("?v=121001", "").split("/")[-1], 'wb') as f: # imgフォルダに格納
+          # .contentで画像データとして書き込む
+                f.write(re.content)
 
     #Contestの中身を取得
     for item in contest_root.xpath("//*[@id='summary']"):
@@ -104,9 +116,19 @@ for contest_url in contests_url:
             for td in entry.xpath(".//td"):
                 print(td.text)
 
+
+
 ##****** プロフィールのスクレピング******##
     #プロフィールの部分を取得
     for profile in contest_root.xpath("//div[@class='entry']"):
+
+    #profile_idの取得
+
+
+
+    #contest_idの取得
+
+
 
     #エントリーNoの取得
      for entry_no in profile.xpath(".//span[1]"):
@@ -147,13 +169,19 @@ for contest_url in contests_url:
       profile_root = lxml.html.fromstring(profile_html)
 
       #profileの写真を取得
+      for profile_img in profile_root.xpath("//*[@id='main-photo']/img"):
+         print(top_url + profile_img.get("src"))
+         profile_images.append(top_url + profile_img.get("src"))
 
-
-
+      for target in profile_images:
+          re = requests.get(target)
+      with open('/Users/YUSUKE/Desktop/Mscolle.com/profile_imgs/' + str(uuid.uuid1()) + target.replace("?v=121001", "").split("/")[-1], 'wb') as f: # imgフォルダに格納
+          # .contentで画像データとして書き込む
+            f.write(re.content)
 
       #学部を取得
-      for faculty in profile_root.xpath("//*[@id='info']/span"):
-            print(faculty.text)
+      for faculty in profile_root.xpath("//*[@id='info']/span[2]"):
+            print(faculty.text.replace(" ", "").replace("\n", ""))
 
       #誕生日を取得
       for birthday in profile_root.xpath("//*[@id='info']/dl[1]/dd"):
@@ -175,9 +203,16 @@ for contest_url in contests_url:
     #詳細の質問のアイテムを取得
       for columns in profile_root.xpath("//ul[@class='columns js-masonry']"):
         for lis in columns.xpath(".//li"):
+    #question_idを取得
+
+
+
     #questionを取得
            for quetion in lis.xpath(".//h3"):
              print(quetion.text.replace(" ", "").replace("\n", ""))
+
     #answerを取得
            for answer in lis.xpath(".//p"):
              print(answer.text.replace(" ", "").replace("\n", ""))
+
+    #profile_idを取得
